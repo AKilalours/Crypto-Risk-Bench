@@ -5,3 +5,16 @@ artifacts/
 *.parquet
 *.csv
 .DS_Store
+
+# Never commit demo videos
+demo/*.mov
+demo/*.mp4
+
+# Local env + generated data
+.venv/
+.cache_market/
+artifacts/
+__pycache__/
+.DS_Store
+*.parquet
+*.csv
