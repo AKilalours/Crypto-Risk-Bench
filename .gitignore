@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Data/artifacts (do NOT commit large generated outputs)
+.cache_market/
+artifacts/
+*.parquet
+*.csv
+*.html
+
+# Jupyter
+.ipynb_checkpoints/

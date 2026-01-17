@@ -1,0 +1,12 @@
+pip install -r requirements.txt
+
+pandas
+numpy
+yfinance
+plotly
+
+python market_analysis.py --tickers BTC-USD AAPL --days 365 --forecast-days 15
+# outputs:
+# artifacts/data/*.parquet, *.csv
+# artifacts/reports/metrics.json, returns_correlation.csv
+# artifacts/plots/*.html
