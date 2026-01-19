@@ -1,23 +1,25 @@
-# CryptoRiskLab — Market Analytics, Risk Metrics, Walk-Forward Backtesting & Dashboard (BTC-USD, AAPL)
+# Crypto Risk Bench — Market Analytics, Risk Metrics, Walk-Forward Backtesting & HTML Dashboard (BTC-USD, AAPL)
 
-CryptoRiskLab is a production-style **market analytics + risk + evaluation** pipeline that ingests daily and intraday price data, engineers return/risk features, runs **walk-forward backtests** across interpretable baseline forecasters, and generates a browsable **HTML dashboard** (plots + reports). It also includes an optional **FastAPI** service for demos and artifact serving.
+Crypto Risk Bench is a production-style **market analytics + risk + evaluation** pipeline that ingests daily and intraday price data, engineers return/risk features, runs **walk-forward backtests** across interpretable baseline forecasters, and generates a browsable **HTML dashboard** (plots + reports). It also includes an optional **FastAPI** service for demos and artifact serving.
 
+**Repository:** `AKilalours/Crypto-Risk-Bench`  
 **Demo video:** https://drive.google.com/file/d/1IEYqpWRuuxXetZYx_teh0lfwo4m8aD1X/view?usp=sharing
 
 > This repository is intentionally positioned as **analytics + evaluation + reproducible reporting**, not “crypto price prediction for profit.”  
-> Outputs include standard evaluation metrics (MAE/RMSE/MAPE) and risk statistics (CAGR, Sharpe/Sortino, Max Drawdown, VaR/CVaR).
+> Outputs include standard error metrics (MAE/MSE/RMSE/MAPE) and risk statistics (CAGR, Sharpe/Sortino, Max Drawdown, VaR/CVaR).
 
 ---
 
 ## Why this project is credible
-Many student “forecasting” repositories stop at a plot. CryptoRiskLab focuses on the engineering and evaluation layers recruiters actually assess:
 
-- **Reproducible runs**: CLI configuration + deterministic seed
-- **Caching & reliability**: TTL-based caching to reduce flaky upstream downloads
-- **Evaluation discipline**: walk-forward backtesting (not a single random split)
-- **Risk analytics**: drawdown, volatility, Sharpe/Sortino, VaR/CVaR
-- **Artifact-first workflow**: HTML dashboards + CSV/JSON reports generated every run
-- **Demo-friendly**:  FastAPI service to serve artifacts and trigger runs
+Many student “forecasting” repositories stop at a plot. Crypto Risk Bench focuses on the engineering and evaluation layers recruiters actually assess:
+
+- **Evaluation discipline:** walk-forward backtesting (not a single random split)
+- **Risk analytics:** drawdown, volatility, Sharpe/Sortino, VaR/CVaR
+- **Artifact-first workflow:** HTML dashboards + CSV/JSON reports generated every run
+- **Caching & reliability:** TTL-based caching to reduce flaky upstream downloads
+- **Reproducible runs:** CLI configuration + deterministic seed (where applicable)
+- **Demo-friendly:** optional FastAPI service to serve artifacts and trigger runs
 
 ---
 
@@ -32,16 +34,16 @@ Many student “forecasting” repositories stop at a plot. CryptoRiskLab focuse
 - Skewness / kurtosis of returns
 
 ### Baseline forecasting + walk-forward backtesting (evaluation-first)
-Baselines evaluated with **walk-forward** backtesting:
+Interpretable baselines evaluated with **walk-forward** backtesting:
 - `naive`: last observed value
 - `ma7`: 7-day moving-average level
 - `ewma_ret`: EWMA on log returns, compounded forward
 - `gbm`: GBM-style simulation baseline with 10–90% band
 
 Metrics written to reports:
-- **MAE**, **RMSE**, **MAPE**
+- **MAE**, **MSE**, **RMSE**, **MAPE**
 
-> These models are intentionally interpretable baselines. The primary engineering signal is the evaluation harness + reporting.
+> These models are intentionally interpretable baselines. The primary signal is the **evaluation harness + risk analytics + reporting pipeline**, not “alpha generation.”
 
 ### Dashboards & artifacts
 - Plotly HTML dashboards per ticker
@@ -50,23 +52,39 @@ Metrics written to reports:
 - Machine-readable metrics JSON
 
 ---
+
+## Walk-forward backtesting (what “walk-forward” means here)
+
+At each step:
+1. Fit the baseline on historical data up to time **t**
+2. Forecast the next **H** days (horizon)
+3. Advance forward and repeat for **N** steps
+4. Aggregate errors across steps into MAE/MSE/RMSE/MAPE
+
+This avoids evaluating on a single split that leaks time structure.
+
+---
+
 ## Data
 
-CryptoRiskLab pulls market data **on demand** from **Yahoo Finance** using the `yfinance` library.
+Crypto Risk Bench pulls market data **on demand** from **Yahoo Finance** using the `yfinance` library.
 
 - **Source:** Yahoo Finance (via `yfinance`)
 - **Assets (default):** `BTC-USD`, `AAPL`
 - **Granularity:**
   - **Daily OHLCV** for the configured date range (`--days`, `--end`)
   - **Intraday** close prices using `period=1d` with configurable interval (default: `5m`)
-- **Daily fields (when available):** Open, High, Low, Close, Adj Close, Volume  
-- **Intraday fields (when available):** DateTime, Open, High, Low, Close, Volume  
+- **Daily fields (when available):** Open, High, Low, Close, Adj Close, Volume
+- **Intraday fields (when available):** DateTime, Open, High, Low, Close, Volume
+- **Caching:** TTL-based caching in `.cache_market/` reduces repeated downloads and improves reliability
 
 Notes:
 - Data availability may vary due to upstream limits, market hours, or delayed feeds.
-- TTL-based caching (`.cache_market/`) reduces repeated downloads and improves reliability.
+- Intraday availability depends on ticker and Yahoo constraints.
 
-## Evaluation Results (Walk-Forward Backtesting)
+---
+
+## Evaluation results (walk-forward backtesting)
 
 Baselines are evaluated with **walk-forward backtesting** and reported using standard error metrics:
 
@@ -82,6 +100,8 @@ Baselines are evaluated with **walk-forward backtesting** and reported using sta
 Where these values are written:
 - `artifacts/reports/backtest_model_comparison.csv`
 - `artifacts/reports/metrics.json`
+
+> Important: MAE/RMSE are **scale-dependent** (BTC prices are much larger than AAPL). For cross-asset comparability, prefer **MAPE** (or add sMAPE/MASE/normalized RMSE).
 
 ---
 
@@ -131,6 +151,15 @@ Open:
 
 ---
 
+# CLI examples
+
+python main.py --tickers BTC-USD AAPL --days 365
+python main.py --plot-last-days 180
+python main.py --forecast-days 15
+python main.py --backtest-horizon 15 --backtest-steps 8
+python main.py --refresh-cache
+
+---
 # Output Structure
 
 artifacts/
@@ -153,14 +182,6 @@ artifacts/
     <ticker>_daily.csv
     <ticker>_daily.parquet   
 
----
-# CLI examples
-
-python main.py --tickers BTC-USD AAPL --days 365
-python main.py --plot-last-days 180
-python main.py --forecast-days 15
-python main.py --backtest-horizon 15 --backtest-steps 8
-python main.py --refresh-cache
 
 ---
 
