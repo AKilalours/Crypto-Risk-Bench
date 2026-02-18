@@ -1,3 +1,4 @@
+![Cover](Crypto_cover.png)
 # Crypto Risk Bench — Market Analytics, Risk Metrics, Walk-Forward Backtesting & HTML Dashboard (BTC-USD, AAPL)
 
 Crypto Risk Bench is a production-style **market analytics + risk + evaluation** pipeline that ingests daily and intraday price data, engineers return/risk features, runs **walk-forward backtests** across interpretable baseline forecasters, and generates a browsable **HTML dashboard** (plots + reports). It also includes an optional **FastAPI** service for demos and artifact serving.
