@@ -1,6 +1,6 @@
 <!-- COVER IMAGE -->
 <div align="center">
-  <img src="https://raw.githubusercontent.com/AKilalours/Crypto-Risk-Bench/main/assets/cover.png" alt="Crypto Risk Bench Cover" width="100%"/>
+  <img src="https://raw.githubusercontent.com/AKilalours/Crypto-Risk-Bench/main/Crypto_cover.png" alt="Crypto Risk Bench Cover" width="100%"/>
 
   <h1>📊 Crypto Risk Bench</h1>
   <p><strong>Market Analytics · Risk Metrics · Walk-Forward Backtesting · HTML Dashboard</strong></p>
